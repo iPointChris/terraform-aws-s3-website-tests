@@ -1,6 +1,7 @@
 # Call the setup module to create a random bucket prefix
 run "setup_tests" {
   module {
+    #terraform apply called for this module
     source = "./tests/setup"
   }
 }
@@ -31,18 +32,18 @@ run "create_bucket" {
 }
 
 run "website_is_running" {
-    command = plan
+  command = plan
 
-    module  { 
-      source = "./tests/final"
-    }
+  module {
+    source = "./tests/final"
+  }
 
-    variables {
-      endpoint = run.create_bucket.website_endpoint
-    }
+  variables {
+    endpoint = run.create_bucket.website_endpoint
+  }
 
-    assert {
-      condition      = data.http.index.status_code == 200
-      error_message  = "website responded with http status ${data.http.index.status_code}"
-    }
+  assert {
+    condition     = data.http.index.status_code == 200
+    error_message = "Website responded with HTTP status ${data.http.index.status_code}"
+  }
 }
